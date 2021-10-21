@@ -1,0 +1,30 @@
+.wrapper {
+    position: relative;
+    margin: auto;
+    margin-top: 100px;
+
+}
+
+.box {
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    box-sizing: border-box;
+}
+
+.wall {
+    background: #bbb url(./image/wall.svg);
+    border-radius: 2px;
+}
+
+.food {
+    background: url(./image/food.svg);
+}
+
+.head {
+    background: url(./image/head.svg);
+}
+
+.body {
+    background: url(./image/body.svg);
+}
