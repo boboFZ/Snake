@@ -4,6 +4,9 @@ import { exchangePosition, findPosition } from "./move.js";
 var wrapper = document.getElementsByClassName("wrapper")[0];
 wrapper.style.height = map.length * 20 + "px";
 wrapper.style.width = map[0].length * 20 + "px";
+let direction = "left";
+const { x, y } = randomPosition();
+map[x][y] = 1;
 function render() {
   wrapper.innerHTML = "";
   for (let i = 0; i < map.length; i++) {
@@ -27,37 +30,77 @@ function render() {
 render();
 
 function randomPosition() {
-  const x = Math.round(Math.random() * (map[0].length - 2 - 1) + 1);
-  const y = Math.round(Math.random() * (map.length - 2 - 1) + 1);
+  const x = Math.round(Math.random() * (map.length - 2 - 1) + 1);
+  const y = Math.round(Math.random() * (map[0].length - 2 - 1) + 1);
   return { x, y };
 }
 
-function moveToLeft() {
+function moveToNext(direction) {
   var pHead = findPosition(snake[0]);
-  var pTail = findPosition(snake[snake.length - 1]);
-  var pHeadNext = { x: pHead.x, y: pHead.y - 1 };
-  if (map[pHeadNext.x][pHeadNext.y] === -1) {
+  let pHeadNext;
+  switch (direction) {
+    case "left":
+      pHeadNext = { x: pHead.x, y: pHead.y - 1 };
+      break;
+    case "right":
+      pHeadNext = { x: pHead.x, y: pHead.y + 1 };
+      break;
+    case "up":
+      pHeadNext = { x: pHead.x - 1, y: pHead.y };
+      break;
+    case "down":
+      pHeadNext = { x: pHead.x + 1, y: pHead.y };
+      break;
+    default:
+      pHeadNext = { x: pHead.x, y: pHead.y - 1 };
+      break;
+  }
+  if (
+    map[pHeadNext.x][pHeadNext.y] === -1 ||
+    map[pHeadNext.x][pHeadNext.y] > 10
+  ) {
     clearInterval(timer);
     return;
   }
   if (map[pHeadNext.x][pHeadNext.y] === 1) {
     map[pHeadNext.x][pHeadNext.y] = snake[snake.length - 1] + 1;
     snake.push(snake[snake.length - 1] + 1);
+    const { x, y } = randomPosition();
+    map[x][y] = 1;
   }
   for (var i = snake.length - 1; i > 0; i--) {
     exchangePosition(findPosition(snake[i]), findPosition(snake[i - 1]));
   }
   exchangePosition(findPosition(10), pHeadNext);
-
 }
-// setInterval(() => {
-//   const { x, y } = randomPosition();
-//   map[y][x] = 1;
-//   render();
-// }, 1000);
 
 var timer = setInterval(() => {
   // const { x, y } = randomPosition();
-  moveToLeft();
+  moveToNext(direction);
   render();
-}, 500);
+}, 300);
+
+document.onkeydown = (e) => {
+  switch (e.key) {
+    case "ArrowLeft":
+      if (direction !== "right") {
+        direction = "left";
+      }
+      break;
+    case "ArrowRight":
+      if (direction !== "left") {
+        direction = "right";
+      }
+      break;
+    case "ArrowUp":
+      if (direction !== "down") {
+        direction = "up";
+      }
+      break;
+    case "ArrowDown":
+      if (direction !== "up") {
+        direction = "down";
+      }
+      break;
+  }
+};
